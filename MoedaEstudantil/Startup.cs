@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoedaEstudantil.Data;
+using MoedaEstudantil.Services;
 
 namespace MoedaEstudantil
 {
@@ -18,6 +19,8 @@ namespace MoedaEstudantil
             services.AddDbContext<MeritSystemContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddScoped<AlunoService>();
+            services.AddScoped<EmpresaService>();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();

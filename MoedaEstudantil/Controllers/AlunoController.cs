@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MoedaEstudantil.Data;
-using MoedaEstudantil.Entities;
+﻿using MoedaEstudantil.Entities;
+using MoedaEstudantil.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MoedaEstudantil.Controllers
 {
@@ -8,69 +8,89 @@ namespace MoedaEstudantil.Controllers
     [Route("api/[controller]")]
     public class AlunoController : ControllerBase
     {
-        private readonly MeritSystemContext _context;
+        private readonly AlunoService _alunoService;
 
-        public AlunoController(MeritSystemContext context)
+        public AlunoController(AlunoService alunoService)
         {
-            _context = context;
+            _alunoService = alunoService;
         }
 
-        // CREATE - Cadastrar um novo aluno
+        /// <summary>
+        /// Cadastrar um novo aluno.
+        /// </summary>
+        /// <param name="aluno">Dados do aluno a ser cadastrado.</param>
+        /// <returns>Confirmação de cadastro do aluno.</returns>
         [HttpPost("cadastro")]
+        [ProducesResponseType(typeof(Aluno), 200)]
+        [ProducesResponseType(400)]
         public IActionResult CadastrarAluno([FromBody] Aluno aluno)
         {
-            _context.Alunos.Add(aluno);
-            _context.SaveChanges();
-            return Ok("Aluno cadastrado com sucesso.");
+            if (aluno == null) return BadRequest("Dados inválidos.");
+
+            var alunoCadastrado = _alunoService.CadastrarAluno(aluno);
+            return Ok(alunoCadastrado);
         }
 
-        // READ - Obter um aluno por ID
+        /// <summary>
+        /// Obter um aluno pelo ID.
+        /// </summary>
+        /// <param name="id">ID do aluno.</param>
+        /// <returns>Dados do aluno.</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Aluno), 200)]
+        [ProducesResponseType(404)]
         public IActionResult ObterAluno(int id)
         {
-            var aluno = _context.Alunos.Find(id);
+            var aluno = _alunoService.ObterAluno(id);
             if (aluno == null) return NotFound("Aluno não encontrado.");
             return Ok(aluno);
         }
 
-        // UPDATE - Atualizar dados de um aluno
+        /// <summary>
+        /// Atualizar dados de um aluno.
+        /// </summary>
+        /// <param name="id">ID do aluno.</param>
+        /// <param name="alunoAtualizado">Dados atualizados do aluno.</param>
+        /// <returns>Confirmação de atualização do aluno.</returns>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(Aluno), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public IActionResult AtualizarAluno(int id, [FromBody] Aluno alunoAtualizado)
         {
-            var aluno = _context.Alunos.Find(id);
+            if (alunoAtualizado == null) return BadRequest("Dados inválidos.");
+
+            var aluno = _alunoService.AtualizarAluno(id, alunoAtualizado);
             if (aluno == null) return NotFound("Aluno não encontrado.");
 
-            aluno.Nome = alunoAtualizado.Nome;
-            aluno.Email = alunoAtualizado.Email;
-            aluno.CPF = alunoAtualizado.CPF;
-            aluno.RG = alunoAtualizado.RG;
-            aluno.Endereco = alunoAtualizado.Endereco;
-            aluno.InstituicaoEnsino = alunoAtualizado.InstituicaoEnsino;
-            aluno.Curso = alunoAtualizado.Curso;
-
-            _context.SaveChanges();
-            return Ok("Aluno atualizado com sucesso.");
+            return Ok(aluno);
         }
 
-        // DELETE - Deletar um aluno por ID
+        /// <summary>
+        /// Deletar um aluno pelo ID.
+        /// </summary>
+        /// <param name="id">ID do aluno.</param>
+        /// <returns>Confirmação de exclusão do aluno.</returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public IActionResult DeletarAluno(int id)
         {
-            var aluno = _context.Alunos.Find(id);
-            if (aluno == null) return NotFound("Aluno não encontrado.");
-
-            _context.Alunos.Remove(aluno);
-            _context.SaveChanges();
+            var sucesso = _alunoService.DeletarAluno(id);
+            if (!sucesso) return NotFound("Aluno não encontrado.");
             return Ok("Aluno deletado com sucesso.");
         }
 
-        // LIST - Obter todos os alunos
+        /// <summary>
+        /// Obter todos os alunos cadastrados.
+        /// </summary>
+        /// <returns>Lista de alunos.</returns>
         [HttpGet("todos")]
+        [ProducesResponseType(typeof(List<Aluno>), 200)]
         public IActionResult ObterTodosAlunos()
         {
-            var alunos = _context.Alunos.ToList();
+            var alunos = _alunoService.ObterTodosAlunos();
             return Ok(alunos);
         }
     }
-
 }

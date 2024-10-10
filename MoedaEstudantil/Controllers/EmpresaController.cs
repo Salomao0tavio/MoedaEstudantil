@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoedaEstudantil.Data;
 using MoedaEstudantil.Entities;
+using MoedaEstudantil.Services;
 
 namespace MoedaEstudantil.Controllers
 {
@@ -8,66 +8,89 @@ namespace MoedaEstudantil.Controllers
     [Route("api/[controller]")]
     public class EmpresaController : ControllerBase
     {
-        private readonly MeritSystemContext _context;
+        private readonly EmpresaService _empresaService;
 
-        public EmpresaController(MeritSystemContext context)
+        public EmpresaController(EmpresaService empresaService)
         {
-            _context = context;
+            _empresaService = empresaService;
         }
 
-        // CREATE - Cadastrar uma nova empresa parceira
+        /// <summary>
+        /// Cadastrar uma nova empresa parceira.
+        /// </summary>
+        /// <param name="empresa">Dados da empresa a ser cadastrada.</param>
+        /// <returns>Confirmação de cadastro da empresa.</returns>
         [HttpPost("cadastro")]
+        [ProducesResponseType(typeof(Empresa), 200)]
+        [ProducesResponseType(400)]
         public IActionResult CadastrarEmpresa([FromBody] Empresa empresa)
         {
-            _context.Empresas.Add(empresa);
-            _context.SaveChanges();
-            return Ok("Empresa cadastrada com sucesso.");
+            if (empresa == null) return BadRequest("Dados inválidos.");
+
+            var empresaCadastrada = _empresaService.CadastrarEmpresa(empresa);
+            return Ok(empresaCadastrada);
         }
 
-        // READ - Obter uma empresa parceira por ID
+        /// <summary>
+        /// Obter uma empresa parceira pelo ID.
+        /// </summary>
+        /// <param name="id">ID da empresa.</param>
+        /// <returns>Dados da empresa parceira.</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Empresa), 200)]
+        [ProducesResponseType(404)]
         public IActionResult ObterEmpresa(int id)
         {
-            var empresa = _context.Empresas.Find(id);
+            var empresa = _empresaService.ObterEmpresa(id);
             if (empresa == null) return NotFound("Empresa não encontrada.");
             return Ok(empresa);
         }
 
-        // UPDATE - Atualizar dados de uma empresa parceira
+        /// <summary>
+        /// Atualizar os dados de uma empresa parceira.
+        /// </summary>
+        /// <param name="id">ID da empresa.</param>
+        /// <param name="empresaAtualizada">Dados atualizados da empresa.</param>
+        /// <returns>Confirmação de atualização da empresa.</returns>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(Empresa), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public IActionResult AtualizarEmpresa(int id, [FromBody] Empresa empresaAtualizada)
         {
-            var empresa = _context.Empresas.Find(id);
+            if (empresaAtualizada == null) return BadRequest("Dados inválidos.");
+
+            var empresa = _empresaService.AtualizarEmpresa(id, empresaAtualizada);
             if (empresa == null) return NotFound("Empresa não encontrada.");
 
-            empresa.Nome = empresaAtualizada.Nome;
-            empresa.CPF = empresaAtualizada.CPF;
-            empresa.Email = empresaAtualizada.Email;
-            empresa.Senha = empresaAtualizada.Senha;
-
-            _context.SaveChanges();
-            return Ok("Empresa atualizada com sucesso.");
+            return Ok(empresa);
         }
 
-        // DELETE - Deletar uma empresa parceira por ID
+        /// <summary>
+        /// Deletar uma empresa parceira pelo ID.
+        /// </summary>
+        /// <param name="id">ID da empresa.</param>
+        /// <returns>Confirmação de exclusão da empresa.</returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public IActionResult DeletarEmpresa(int id)
         {
-            var empresa = _context.Empresas.Find(id);
-            if (empresa == null) return NotFound("Empresa não encontrada.");
-
-            _context.Empresas.Remove(empresa);
-            _context.SaveChanges();
+            var sucesso = _empresaService.DeletarEmpresa(id);
+            if (!sucesso) return NotFound("Empresa não encontrada.");
             return Ok("Empresa deletada com sucesso.");
         }
 
-        // LIST - Obter todas as empresas parceiras
+        /// <summary>
+        /// Obter todas as empresas parceiras cadastradas.
+        /// </summary>
+        /// <returns>Lista de empresas parceiras.</returns>
         [HttpGet("todas")]
+        [ProducesResponseType(typeof(List<Empresa>), 200)]
         public IActionResult ObterTodasEmpresas()
         {
-            var empresas = _context.Empresas.ToList();
+            var empresas = _empresaService.ObterTodasEmpresas();
             return Ok(empresas);
         }
     }
-
 }
