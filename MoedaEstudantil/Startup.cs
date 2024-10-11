@@ -17,7 +17,7 @@ namespace MoedaEstudantil
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MeritSystemContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<AlunoService>();
             services.AddScoped<EmpresaService>();
