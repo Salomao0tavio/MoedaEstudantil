@@ -12,7 +12,7 @@
 
 1. **Clone o projeto**: Certifique-se de ter o projeto MoedaEstudantil clonado na sua máquina.
 2. **Acesse a pasta correta**: No terminal ou prompt de comando, navegue até a pasta do projeto:
-   ```cd MoedaEstudantil```
+   ```cd MoedaEstudantil\MoedaEstudantil```
    
 ### Subir o Banco de Dados
 
@@ -26,10 +26,13 @@ Esse script irá automatizar a criação do container e garantir que o banco de 
 
 #### Efetuar migrações:
 
-- Utilize o Entity Framework Core para aplicar as migrações e criar as tabelas no banco de dados: ```dotnet ef migrations add InitialCreate```
+    -Certifque-se de que o banco esta rodando no App DockerDesktop
+    
+    - Utilize o Entity Framework Core para aplicar as migrações e criar as tabelas no banco de dados: ```dotnet ef migrations add InitialCreate```
 
- - Atualizar o banco de dados:
-Execute o seguinte comando para aplicar as migrações ao banco:```dotnet ef database update```
+##### Atualizar o banco de dados:
+
+    - Execute o seguinte comando para aplicar as migrações ao banco:```dotnet ef database update```
 
 ### Rodar o Projeto
 
@@ -41,3 +44,38 @@ Após configurar o banco de dados, execute o seguinte comando para rodar a aplic
 Acessar a aplicação:
 
 A documentação da aplicação (Swagger) estará disponível aqui: [Swagger UI](https://localhost:7065/swagger/index.html).
+
+
+### Resumo dos Endpoints
+
+Aqui está uma visão geral dos principais endpoints:
+
+##### Alunos
+
+    - POST /api/alunos/cadastrar - Cadastro de aluno
+    - POST /api/auth/login - Login (retorna JWT com role "Aluno")
+    - GET /api/alunos/{id}/extrato - Consultar extrato
+    - POST /api/alunos/{id}/trocar - Trocar moedas por vantagem
+
+##### Professores
+
+    - POST /api/professores/cadastrar - Cadastro de professor
+    - POST /api/auth/login - Login (retorna JWT com role "Professor")
+    - GET /api/professores/{id}/extrato - Consultar extrato
+    - POST /api/professores/{id}/distribuirMoeda - Distribuir moedas para aluno
+
+##### Empresas
+
+    - POST /api/empresas/cadastrar - Cadastro de empresa
+    - POST /api/auth/login - Login (retorna JWT com role "Empresa")
+    - POST /api/empresas/{id}/vantagens - Cadastrar vantagem
+
+##### Vantagens
+
+    - GET /api/vantagens - Listar todas as vantagens
+    - GET /api/vantagens/{id} - Detalhes de uma vantagem
+
+##### Autenticação Geral
+
+    - POST /api/auth/login - Login para qualquer tipo de usuário
+    - POST /api/auth/logout - Logout (opcional, dependendo do método de gerenciamento de tokens)
