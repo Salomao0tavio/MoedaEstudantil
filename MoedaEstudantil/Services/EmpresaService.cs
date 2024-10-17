@@ -30,7 +30,7 @@ namespace MoedaEstudantil.Services
             if (empresa == null) return null;
 
             empresa.Nome = empresaAtualizada.Nome;
-            empresa.CPF = empresaAtualizada.CPF;
+            empresa.Documento = empresaAtualizada.Documento;
             empresa.Email = empresaAtualizada.Email;
             empresa.Senha = empresaAtualizada.Senha;
 
