@@ -7,18 +7,7 @@
         public Empresa()
         {
             VantagensOferecidas = new List<Vantagem>();
-        }
-
-        public void CadastrarVantagem(string descricao, decimal custo, string foto)
-        {
-            var vantagem = new Vantagem
-            {
-                Descricao = descricao,
-                Custo = custo,
-                Foto = foto
-            };
-
-            VantagensOferecidas.Add(vantagem);
+            Id = Guid.NewGuid();
         }
     }
 
